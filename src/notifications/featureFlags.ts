@@ -114,10 +114,12 @@ export function parseNotificationFeatureFlags(env: {
  * source-scoped once the master switch is on.
  */
 export function isNotificationAllowed(
-  flags: NotificationFeatureFlags,
+  flagsOrUndefined: NotificationFeatureFlags | undefined,
   source: ContractSource,
   _eventName?: string,
 ): boolean {
+  // Configs built before NOTIFY_* existed keep the always-on behaviour.
+  const flags = flagsOrUndefined ?? DEFAULT_FEATURE_FLAGS;
   if (!flags.enabled) return false;
   if (source === "market") return flags.market;
   if (source === "squad") return flags.squad;
@@ -125,7 +127,10 @@ export function isNotificationAllowed(
 }
 
 /** Stable, secret-free summary for boot logs and `/status`. */
-export function formatFeatureFlags(flags: NotificationFeatureFlags): string {
+export function formatFeatureFlags(
+  flagsOrUndefined: NotificationFeatureFlags | undefined,
+): string {
+  const flags = flagsOrUndefined ?? DEFAULT_FEATURE_FLAGS;
   return (
     `enabled=${flags.enabled} market=${flags.market} squad=${flags.squad}`
   );
